@@ -25,28 +25,64 @@ p                                       {color: #949494;}
 .banner-section a:hover:after           {width: 100%;left: 0;right: unset;}
 .banner-section a:hover img             {transform: rotate(45deg);}
 /*  */
-.images-container                       {display: flex;justify-content: space-between;flex-wrap: wrap;padding: 100px 40px;}
-.images-container .img                  {width: 100%;display: flex;}
-.images-container .img:nth-child(even)  {justify-content: end;}
-.images-container img                   {aspect-ratio: 16 / 9;object-fit: cover;transition: all ease 1s;}
-.img-main                               {max-width: 30vw;width: 100%;border: 1px solid transparent;overflow: hidden;position: relative;line-height: 0;opacity: 0;transition: all ease-in-out 0.15s;}
-.img-main:hover:after                   {content: '';position: absolute;top: -100%;left: -100%;height: 200%;width: 200%;background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);animation: slide 1s forwards;filter: blur(33px);}
-/*  */
-@keyframes slide                        {
-    from                                { top: -100%; left: -100%; }
-    to                                  { top: 100%; left: 100%; }
+
+/* --- GAYA GALERI PINTEREST (MASONRY) --- */
+
+.images-container {
+    /* Menggunakan sistem Kolom Koran, bukan Flexbox */
+    column-count: 3;       /* Jumlah kolom (Desktop) */
+    column-gap: 20px;      /* Jarak antar kolom */
+    padding: 100px 40px;
 }
-.img-main:hover img                     {transform: scale(1.2);}
-.img-main:hover                         {border-color: #5599FF;}
-.zoom-img img                           {aspect-ratio: 16 / 9;object-fit: cover;transition: all ease 0.2s;object-position: top;}
-.images-container img:hover             {transform: scale(1.1) ;opacity: 1;}
-section{min-height: 100vh;}
-/*  */
-html.lenis, html.lenis body             {height: auto;}
-.lenis.lenis-smooth                     {scroll-behavior: auto !important;}
-.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior: contain;}
-.lenis.lenis-stopped                    {overflow: hidden;}
-.lenis.lenis-scrolling iframe           {pointer-events: none;}
+
+.img {
+    /* Agar foto tidak terpotong di tengah kolom */
+    break-inside: avoid;   
+    margin-bottom: 20px;   /* Jarak antar foto ke bawah */
+    display: block;
+    width: 100%;
+}
+
+.img-main {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;   /* Sudut tumpul biar estetik */
+    /* Efek border saat di-hover (opsional) */
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.img-main img {
+    width: 100%;
+    height: auto;          /* INI KUNCINYA: Tinggi mengikuti asli foto */
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+/* Efek saat mouse diarahkan ke foto */
+.img-main:hover {
+    border-color: #D6F844; /* Warna border hijau neon */
+    transform: translateY(-5px); /* Naik sedikit */
+}
+
+.img-main:hover img {
+    transform: scale(1.05); /* Zoom sedikit */
+}
+
+/* --- RESPONSIVE (Tampilan HP & Tablet) --- */
+
+@media screen and (max-width: 1024px) {
+    .images-container {
+        column-count: 2; /* Tablet jadi 2 kolom */
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .images-container {
+        column-count: 1; /* HP jadi 1 kolom memanjang ke bawah */
+        padding: 40px 20px;
+    }
+}
  
  
 @keyframes spin                         {

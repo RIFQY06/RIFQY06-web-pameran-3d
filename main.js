@@ -14,6 +14,10 @@ const canvas = document.querySelector('canvas.webgl');
 const group = new THREE.Group();
 scene.add(group);
 
+// BARU: Group untuk objek yang DIAM (Malaikat di belakang)
+const groupStatic = new THREE.Group();
+scene.add(groupStatic);
+
 // Floor
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(10, 10),
@@ -74,9 +78,11 @@ const rimLightHelper = new THREE.PointLightHelper(rimLight);
 // scene.add( rimLightHelper);
 
 // GLTF Loader
+// GLTF Loader
 const gltfLoader = new GLTFLoader();
-// Update fungsi ini agar menerima parameter 'scale'
-const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1) => {
+
+// Fungsi loadModel yang diperbarui (Bersih & Benar)
+const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, targetGroup = group) => {
     gltfLoader.load(path, (gltf) => {
         const mesh = gltf.scene;
         mesh.traverse((child) => {
@@ -88,26 +94,22 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1) =
         mesh.position.set(position.x, position.y, position.z);
         mesh.rotation.set(rotation.x, rotation.y, rotation.z);
         
-        // INI BAGIAN PENTING: Mengatur ukuran (membesarkan) model
         mesh.scale.set(scale, scale, scale); 
         
-        group.add(mesh); 
-        console.log(gltf.scene);
+        targetGroup.add(mesh); 
+        
+        console.log("Model loaded");
 
-        // Hilangkan loader saat selesai
+        // Loader logic
         const loaderEl = document.getElementById('preloader');
         if (loaderEl) {
             gsap.to(loaderEl, {
-                scale: 1.5,
-                opacity: 0,
-                duration: 0.5,
-                ease: "linear",
+                scale: 1.5, opacity: 0, duration: 0.5, ease: "linear",
                 onComplete: () => loaderEl.remove()
             });
         }
     },
     (xhr) => {
-        // Optional: Progress feedback
         const percent = (xhr.loaded / xhr.total) * 100;
         console.log(`Loading model: ${percent.toFixed(0)}%`);
     },
@@ -117,11 +119,22 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1) =
 };
 
 // Load multiple models
+// --- MODEL 1: PIT (Berputar di Depan) ---
 loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/source/scene.gltf', 
-    { x: 0, y: 0, z: 0 },   // Posisi: Pas di tengah
-    { x: 0, y: 0, z: 0 },   // Rotasi: Standar
-    1                      // Scale: Kita besarkan dikit lagi jadi 25
+    { x: 0, y: 0, z: 0 }, 
+    { x: 0, y: 0, z: 0 }, 
+    1,      
+    group   // Masuk ke Group PUTAR
+);
+
+// --- MODEL 2: MALAIKAT (Diam di Belakang) ---
+loadModel(
+    'https://rifqy06.github.io/RIFQY06-web-pameran-3d/angel/scene.gltf', 
+    { x: 0, y: 0, z: -2 },   // Posisi: Naik (y:6) & Mundur (z:-4)
+    { x: 0, y: 0, z: 0 }, 
+    1.5,                       // Scale: 5 (Sesuaikan jika kekecilan)
+    groupStatic              // Masuk ke Group DIAM
 );
 
 // Sizes

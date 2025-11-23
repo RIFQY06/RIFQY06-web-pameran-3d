@@ -176,3 +176,28 @@ p                                       {color: #949494;}
     h1                                  {font-size: 50px;line-height: 60px;}
     .banner-section                     {margin-top: 20px;}
 }
+
+/* --- TOMBOL MUSIK --- */
+.music-toggle {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid #D6F844;
+    color: #D6F844;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-family: "Golos Text", sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.music-toggle:hover {
+    background: #D6F844;
+    color: #000;
+    transform: scale(1.1);
+}

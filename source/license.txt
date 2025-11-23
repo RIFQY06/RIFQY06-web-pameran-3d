@@ -1,0 +1,11 @@
+Model Information:
+* title:	Pit
+* source:	https://sketchfab.com/3d-models/pit-a75eda0f8e064c3d82985a5eaf029a32
+* author:	flioink (https://sketchfab.com/flioink)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Pit" (https://sketchfab.com/3d-models/pit-a75eda0f8e064c3d82985a5eaf029a32) by flioink (https://sketchfab.com/flioink) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

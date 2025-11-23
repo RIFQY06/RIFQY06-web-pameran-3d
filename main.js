@@ -291,11 +291,9 @@ gui.close();
 // Scene Controls
 
 // Renderer
-const renderer = new THREE.WebGLRenderer({ 
-    canvas: canvas,
-    alpha: true,       // <--- WAJIB ADA (Biar background bolong/transparan)
-    antialias: true 
-});
+const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+renderer.shadowMap.enabled = true;
+renderer.setSize(sizes.width, sizes.height);
 
 // Helper toggles
 const helpersFolder = gui.addFolder('Helpers');

@@ -121,7 +121,7 @@ loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/source/scene.gltf', 
     { x: 0, y: 0, z: 0 },   // Posisi: Pas di tengah
     { x: 0, y: 0, z: 0 },   // Rotasi: Standar
-    4                      // Scale: Kita besarkan dikit lagi jadi 25
+    1                      // Scale: Kita besarkan dikit lagi jadi 25
 );
 
 // Sizes

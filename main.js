@@ -112,7 +112,7 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }) => {
 };
 
 // Load multiple models
-loadModel('https://rifqy06.github.io/RIFQY06-web-pameran-3d/source/scene.gltf',{ x: 0, y: 10.8, z: -15 },{ x: 0, y: 0, z: 0 }20);
+loadModel('https://rifqy06.github.io/RIFQY06-web-pameran-3d/source/scene.gltf',{ x: 0, y: 10.8, z: -15 },{ x: 0, y: 0, z: 0 }, 20);
 
 // Sizes
 const sizes = { width: window.innerWidth, height: window.innerHeight };

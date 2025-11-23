@@ -290,9 +290,12 @@ groupFolder.add(group.rotation, 'z', 0, Math.PI * 2, 0.1).name('Rotation Z');
 gui.close();
 // Scene Controls
 
-// Renderer Controls
-const rendererFolder = gui.addFolder('Renderer');
-rendererFolder.add(renderer, 'toneMappingExposure', 0, 3, 0.01).name('Exposure');
+// Renderer
+const renderer = new THREE.WebGLRenderer({ 
+    canvas: canvas,
+    alpha: true,       // <--- WAJIB ADA (Biar background bolong/transparan)
+    antialias: true 
+});
 
 // Helper toggles
 const helpersFolder = gui.addFolder('Helpers');

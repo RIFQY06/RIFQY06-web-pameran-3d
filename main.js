@@ -464,3 +464,44 @@ gsap.to(split.chars, {
   stagger: 0.05,
   ease: "sine.inOut"
 });
+
+// --- LOGIKA MUSIK AUTO-START (SMART) ---
+const music = document.getElementById('bg-music');
+const musicBtn = document.getElementById('music-btn');
+let isPlaying = false;
+
+// Fungsi menyalakan musik
+function playMusic() {
+    if (!isPlaying) {
+        music.play().then(() => {
+            isPlaying = true;
+            musicBtn.innerHTML = "MUSIC: ON 🔊";
+            
+            // Kalau sudah nyala, hapus pendeteksi biar gak jalan terus
+            document.removeEventListener('click', playMusic);
+            document.removeEventListener('scroll', playMusic);
+        }).catch(error => {
+            console.log("Menunggu interaksi user untuk memutar musik...");
+        });
+    }
+}
+
+// Deteksi interaksi pertama (Klik atau Scroll) untuk memicu musik
+document.addEventListener('click', playMusic);
+document.addEventListener('scroll', playMusic);
+
+// Tombol Manual (Buat jaga-jaga kalau user mau matikan)
+if (musicBtn) {
+    musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        if (isPlaying) {
+            music.pause();
+            musicBtn.innerHTML = "MUSIC: OFF 🔇";
+            isPlaying = false;
+        } else {
+            music.play();
+            musicBtn.innerHTML = "MUSIC: ON 🔊";
+            isPlaying = true;
+        }
+    });
+}

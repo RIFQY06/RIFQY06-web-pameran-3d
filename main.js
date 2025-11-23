@@ -75,7 +75,8 @@ const rimLightHelper = new THREE.PointLightHelper(rimLight);
 
 // GLTF Loader
 const gltfLoader = new GLTFLoader();
-const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }) => {
+// Update fungsi ini agar menerima parameter 'scale'
+const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1) => {
     gltfLoader.load(path, (gltf) => {
         const mesh = gltf.scene;
         mesh.traverse((child) => {
@@ -86,29 +87,33 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }) => {
         });
         mesh.position.set(position.x, position.y, position.z);
         mesh.rotation.set(rotation.x, rotation.y, rotation.z);
-        group.add(mesh);  // ✅ Add model to the group
+        
+        // INI BAGIAN PENTING: Mengatur ukuran (membesarkan) model
+        mesh.scale.set(scale, scale, scale); 
+        
+        group.add(mesh); 
         console.log(gltf.scene);
-        // ✅ Hide loader when model is ready
+
+        // Hilangkan loader saat selesai
         const loaderEl = document.getElementById('preloader');
         if (loaderEl) {
             gsap.to(loaderEl, {
                 scale: 1.5,
                 opacity: 0,
-                // y:"-100%",
                 duration: 0.5,
                 ease: "linear",
                 onComplete: () => loaderEl.remove()
             });
         }
-    });
+    },
     (xhr) => {
-        // Optional: Progress feedback (in case you want percentage)
+        // Optional: Progress feedback
         const percent = (xhr.loaded / xhr.total) * 100;
         console.log(`Loading model: ${percent.toFixed(0)}%`);
     },
-        (error) => {
-            console.error('Error loading model', error);
-        }
+    (error) => {
+        console.error('Error loading model', error);
+    });
 };
 
 // Load multiple models

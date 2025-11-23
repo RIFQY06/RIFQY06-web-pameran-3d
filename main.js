@@ -75,8 +75,7 @@ const rimLightHelper = new THREE.PointLightHelper(rimLight);
 
 // GLTF Loader
 const gltfLoader = new GLTFLoader();
-// Update fungsi ini agar menerima parameter 'scale'
-const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1) => {
+const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }) => {
     gltfLoader.load(path, (gltf) => {
         const mesh = gltf.scene;
         mesh.traverse((child) => {
@@ -87,42 +86,33 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1) =
         });
         mesh.position.set(position.x, position.y, position.z);
         mesh.rotation.set(rotation.x, rotation.y, rotation.z);
-        
-        // FITUR BARU: Mengatur ukuran model
-        mesh.scale.set(scale, scale, scale); 
-        
-        group.add(mesh); 
+        group.add(mesh);  // ✅ Add model to the group
         console.log(gltf.scene);
-
-        // Hilangkan loader saat selesai
+        // ✅ Hide loader when model is ready
         const loaderEl = document.getElementById('preloader');
         if (loaderEl) {
             gsap.to(loaderEl, {
                 scale: 1.5,
                 opacity: 0,
+                // y:"-100%",
                 duration: 0.5,
                 ease: "linear",
                 onComplete: () => loaderEl.remove()
             });
         }
-    },
+    });
     (xhr) => {
-        // Optional: Progress feedback
+        // Optional: Progress feedback (in case you want percentage)
         const percent = (xhr.loaded / xhr.total) * 100;
         console.log(`Loading model: ${percent.toFixed(0)}%`);
     },
-    (error) => {
-        console.error('Error loading model', error);
-    });
+        (error) => {
+            console.error('Error loading model', error);
+        }
 };
 
 // Load multiple models
-loadModel(
-    'https://rifqy06.github.io/RIFQY06-web-pameran-3d/source/scene.gltf', 
-    { x: 0, y: 10.8, z: -15 }, 
-    { x: 0, y: 0, z: 0 }, 
-    20
-);
+loadModel('https://raw.githubusercontent.com/Sabur-Ahemad/roman-godess-3d/main/flora/scene.gltf', { x: 0, y: 10.8, z: -15 });
 
 // Sizes
 const sizes = { width: window.innerWidth, height: window.innerHeight };

@@ -28,59 +28,74 @@ p                                       {color: #949494;}
 
 /* --- GAYA GALERI PINTEREST (MASONRY) --- */
 
+/* --- GAYA GALERI ZIG-ZAG (Kiri Kanan) --- */
+
 .images-container {
-    /* Menggunakan sistem Kolom Koran, bukan Flexbox */
-    column-count: 3;       /* Jumlah kolom (Desktop) */
-    column-gap: 20px;      /* Jarak antar kolom */
-    padding: 100px 40px;
+    display: flex;
+    flex-direction: column; /* Susun ke bawah satu per satu */
+    gap: 50px;              /* Jarak antar foto */
+    padding: 50px 10%;      /* Padding kiri kanan biar gak mepet pinggir */
+    
+    /* PENTING: Ini biar galerinya turun ke bawah, gak nutupin Judul Utama */
+    margin-top: 100vh;      
+    position: relative;
+    z-index: 10;            /* Pastikan di atas background */
 }
 
 .img {
-    /* Agar foto tidak terpotong di tengah kolom */
-    break-inside: avoid;   
-    margin-bottom: 20px;   /* Jarak antar foto ke bawah */
+    width: 40%;             /* Lebar foto cuma 40% layar, sisanya kosong buat patung */
     display: block;
-    width: 100%;
 }
 
+/* --- LOGIKA ZIG-ZAG --- */
+
+/* Foto Ganjil (1, 3, 5...) Rata KIRI */
+.img:nth-child(odd) {
+    align-self: flex-start;
+    text-align: left;
+}
+
+/* Foto Genap (2, 4, 6...) Rata KANAN */
+.img:nth-child(even) {
+    align-self: flex-end;
+    text-align: right;
+    margin-top: 50px;       /* Turunin dikit biar gak sejajar kaku */
+}
+
+/* --- STYLE GAMBARNYA --- */
 .img-main {
     width: 100%;
     overflow: hidden;
-    border-radius: 10px;   /* Sudut tumpul biar estetik */
-    /* Efek border saat di-hover (opsional) */
-    border: 2px solid transparent;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Kasih bayangan biar pop-up */
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
 }
 
 .img-main img {
     width: 100%;
-    height: auto;          /* INI KUNCINYA: Tinggi mengikuti asli foto */
+    height: auto;
     display: block;
     transition: transform 0.5s ease;
 }
 
-/* Efek saat mouse diarahkan ke foto */
+/* Efek Hover */
 .img-main:hover {
-    border-color: #D6F844; /* Warna border hijau neon */
-    transform: translateY(-5px); /* Naik sedikit */
+    border-color: #D6F844;
+    transform: scale(1.02);
 }
 
-.img-main:hover img {
-    transform: scale(1.05); /* Zoom sedikit */
-}
-
-/* --- RESPONSIVE (Tampilan HP & Tablet) --- */
-
-@media screen and (max-width: 1024px) {
+/* --- RESPONSIVE (HP) --- */
+@media screen and (max-width: 768px) {
     .images-container {
-        column-count: 2; /* Tablet jadi 2 kolom */
+        padding: 50px 20px;
+        gap: 30px;
     }
-}
-
-@media screen and (max-width: 600px) {
-    .images-container {
-        column-count: 1; /* HP jadi 1 kolom memanjang ke bawah */
-        padding: 40px 20px;
+    .img {
+        width: 100%; /* Kalau di HP, foto jadi full lebar (biar jelas) */
+    }
+    .img:nth-child(even) {
+        margin-top: 0;
     }
 }
  

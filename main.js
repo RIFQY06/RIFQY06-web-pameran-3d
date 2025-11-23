@@ -1,4 +1,4 @@
-import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
+    import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.161.0/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://unpkg.com/three@0.161.0/examples/jsm/loaders/GLTFLoader.js";
 import { GUI } from 'https://unpkg.com/dat.gui@0.7.9/build/dat.gui.module.js';
@@ -145,12 +145,16 @@ const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.set(0, 2, 2);
 scene.add(camera);
 
-// Renderer
 const renderer = new THREE.WebGLRenderer({ 
     canvas: canvas, 
-    alpha: true,       // <--- INI KUNCINYA (Bikin Transparan)
+    alpha: true, 
     antialias: true 
 });
+
+// --- TAMBAHKAN 3 BARIS INI BIAR TAJAM (HD) ---
+renderer.shadowMap.enabled = true;
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // <--- INI KUNCINYA
 // Scroll-based rotation for the group
 if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);

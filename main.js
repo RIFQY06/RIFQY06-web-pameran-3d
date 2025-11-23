@@ -1,4 +1,4 @@
-    import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
+import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.161.0/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://unpkg.com/three@0.161.0/examples/jsm/loaders/GLTFLoader.js";
 import { GUI } from 'https://unpkg.com/dat.gui@0.7.9/build/dat.gui.module.js';
@@ -10,13 +10,15 @@ import { UnrealBloomPass } from "https://unpkg.com/three@0.161.0/examples/jsm/po
 const scene = new THREE.Scene();
 const canvas = document.querySelector('canvas.webgl');
 
-// Group for torus and model
+// --- PERBAIKAN GROUP DI SINI (HANYA SATU KALI DEFINISI) ---
+// Group untuk objek yang BERPUTAR (Pit & Cincin)
 const group = new THREE.Group();
 scene.add(group);
 
-// BARU: Group untuk objek yang DIAM (Malaikat di belakang)
+// Group untuk objek yang DIAM (Malaikat di belakang)
 const groupStatic = new THREE.Group();
 scene.add(groupStatic);
+// ----------------------------------------------------------
 
 // Floor
 const floor = new THREE.Mesh(
@@ -30,25 +32,23 @@ floor.rotation.x = -Math.PI * 0.5;
 const geometry = new THREE.TorusGeometry(0.2, 0.04, 4, 20);
 const material = new THREE.MeshStandardMaterial({
     color: 0x2555FD,
-    emissive: 0x2555FD,  // ✅ Torus now emits light
-    emissiveIntensity: 5,  // ✅ Increased glow
+    emissive: 0x2555FD,
+    emissiveIntensity: 5,
     wireframe: true
 });
 const torus = new THREE.Mesh(geometry, material);
 torus.position.set(0, 1.8, 0);
-group.add(torus);
+group.add(torus); // Masuk ke group
 
 const BLOOM_LAYER = 1;
-torus.layers.enable(BLOOM_LAYER);  // Only torus glows
+torus.layers.enable(BLOOM_LAYER);
 
-
-
-// ✅ Move the PointLight inside the Torus
-const torusLight = new THREE.PointLight(0xffffff, 0.01, 0.25, 0.0004); // (color, intensity, distance, decay)
-torusLight.position.set(0, 1.8, -2); // ✅ Inside the torus
+// Lighting
+// Move the PointLight inside the Torus
+const torusLight = new THREE.PointLight(0xffffff, 0.01, 0.25, 0.0004); 
+torusLight.position.set(0, 1.8, -2); 
 scene.add(torusLight);
 
-// ✅ Light Helper
 const torusLightHelper = new THREE.PointLightHelper(torusLight);
 // scene.add(torusLightHelper);
 
@@ -57,10 +57,8 @@ spotLight.position.set(0, 3, 0.5);
 spotLight.castShadow = true;
 scene.add(spotLight);
 
-
 const spotLightHelper = new THREE.SpotLightHelper(spotLight);
 // scene.add(spotLightHelper);
-
 
 // Soft fill light from the left
 const fillLight = new THREE.PointLight(0x5599FF, 30, 5, 2);
@@ -74,14 +72,13 @@ scene.add(rimLight);
 
 const fillLightHelper = new THREE.PointLightHelper(fillLight);
 const rimLightHelper = new THREE.PointLightHelper(rimLight);
-// scene.add( fillLightHelper);
-// scene.add( rimLightHelper);
+// scene.add(fillLightHelper);
+// scene.add(rimLightHelper);
 
-// GLTF Loader
-// GLTF Loader
+// --- GLTF LOADER FUNCTION (SUDAH DIPERBAIKI) ---
 const gltfLoader = new GLTFLoader();
 
-// Fungsi loadModel yang diperbarui (Bersih & Benar)
+// Fungsi ini sudah mendukung SCALE dan TARGET GROUP
 const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, targetGroup = group) => {
     gltfLoader.load(path, (gltf) => {
         const mesh = gltf.scene;
@@ -89,6 +86,11 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
             if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
+                // Fix Silau Malaikat
+                if(child.material) {
+                    child.material.roughness = 0.8; 
+                    child.material.metalness = 0.1;
+                }
             }
         });
         mesh.position.set(position.x, position.y, position.z);
@@ -100,7 +102,7 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
         
         console.log("Model loaded");
 
-        // Loader logic
+        // Hide loader when model is ready
         const loaderEl = document.getElementById('preloader');
         if (loaderEl) {
             gsap.to(loaderEl, {
@@ -118,23 +120,24 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
     });
 };
 
-// Load multiple models
-// --- MODEL 1: PIT (Berputar di Depan) ---
+// --- LOAD MODELS ---
+
+// 1. PATUNG PIT (Berputar di Depan)
 loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/source/scene.gltf', 
     { x: 0, y: 0, z: 0 }, 
     { x: 0, y: 0, z: 0 }, 
-    1,      
-    group   // Masuk ke Group PUTAR
+    4,      
+    group   // Masuk Group Putar
 );
 
-// --- MODEL 2: MALAIKAT (Diam di Belakang) ---
+// 2. PATUNG MALAIKAT (Diam di Belakang)
 loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/angel/scene.gltf', 
-    { x: 0, y: 0, z: -2 },   // Posisi: Naik (y:6) & Mundur (z:-4)
+    { x: 0, y: 6, z: -4 },   
     { x: 0, y: 0, z: 0 }, 
-    1.5,                       // Scale: 5 (Sesuaikan jika kekecilan)
-    groupStatic              // Masuk ke Group DIAM
+    5,
+    groupStatic // Masuk Group Diam
 );
 
 // Sizes
@@ -145,33 +148,33 @@ const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.set(0, 2, 2);
 scene.add(camera);
 
+// --- RENDERER (SUDAH FIX TRANSPARAN) ---
 const renderer = new THREE.WebGLRenderer({ 
-    canvas: canvas, 
-    alpha: true, 
-    antialias: true 
+    canvas: canvas,
+    alpha: true,       // Transparan agar video terlihat
+    antialias: true    // Halus
 });
-
-// --- TAMBAHKAN 3 BARIS INI BIAR TAJAM (HD) ---
 renderer.shadowMap.enabled = true;
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // <--- INI KUNCINYA
-// Scroll-based rotation for the group
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// Scroll Animation
 if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 
     gsap.to(group.rotation, {
-        y: "+=6.28", // ✅ Rotate in the same direction as the wheel event
+        y: "+=6.28",
         scrollTrigger: {
             trigger: "body",
             start: "top top",
             end: "bottom bottom",
-            scrub: 1, // Smooth scrolling effect
+            scrub: 1,
         }
     });
 
     gsap.to(camera.position, {
-        y: 1, // ✅ Moves downward instead of upward
-        z: 1.7, // ✅ Moves backward instead of forward
+        y: 1,
+        z: 1.7,
         scrollTrigger: {
             trigger: "body",
             start: "top top",
@@ -181,6 +184,7 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     });
 }
 
+// Post Processing
 const composer = new EffectComposer(renderer);
 composer.setSize(sizes.width, sizes.height);
 composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -190,13 +194,11 @@ composer.addPass(renderPass);
 
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(sizes.width, sizes.height),
-    1,   // strength — glow intensity
-    1.0,   // radius — spread
-    0    // threshold — how bright a pixel must be to glow
+    1, 1.0, 0
 );
 composer.addPass(bloomPass);
 
-// dat.GUI Setup
+// --- DAT.GUI SETUP (MENU PENGATURAN LENGKAP DIKEMBALIKAN) ---
 const gui = new GUI({ width: 350 });
 
 // Torus Controls
@@ -212,6 +214,7 @@ torusFolder.addColor({ color: '#2555FD' }, 'color').onChange((value) => {
     material.color.set(value);
     material.emissive.set(value);
 }).name('Color');
+
 // Camera Controls
 const cameraFolder = gui.addFolder('Camera');
 cameraFolder.add(camera.position, 'x', -10, 10, 0.1).name('Position X');
@@ -288,17 +291,20 @@ groupFolder.add(group.rotation, 'y', 0, Math.PI * 2, 0.1).name('Rotation Y');
 groupFolder.add(group.rotation, 'z', 0, Math.PI * 2, 0.1).name('Rotation Z');
 
 gui.close();
-// Scene Controls
 
-// Renderer
-const renderer = new THREE.WebGLRenderer({ canvas: canvas });
-renderer.shadowMap.enabled = true;
-renderer.setSize(sizes.width, sizes.height);
+// Scene Controls (HAPUS BACKGROUND COLOR BIAR VIDEO KELIHATAN)
+/* const sceneFolder = gui.addFolder('Scene');
+sceneFolder.addColor({ backgroundColor: '#000000' }, 'backgroundColor').onChange((value) => {
+    scene.background = new THREE.Color(value);
+}).name('Background Color'); 
+*/
+
+// Renderer Controls
+const rendererFolder = gui.addFolder('Renderer');
+rendererFolder.add(renderer, 'toneMappingExposure', 0, 3, 0.01).name('Exposure');
 
 // Helper toggles
 const helpersFolder = gui.addFolder('Helpers');
-
-
 const helperControls = {
     showTorusLightHelper: false,
     showSpotLightHelper: false,
@@ -306,204 +312,101 @@ const helperControls = {
     showFillLightHelper: false
 };
 
-
 helpersFolder.add(helperControls, 'showTorusLightHelper').onChange((value) => {
-    if (value) {
-        scene.add(torusLightHelper);
-    } else {
-        scene.remove(torusLightHelper);
-    }
+    value ? scene.add(torusLightHelper) : scene.remove(torusLightHelper);
 }).name('Torus Light Helper');
 
 helpersFolder.add(helperControls, 'showSpotLightHelper').onChange((value) => {
-    if (value) {
-        scene.add(spotLightHelper);
-    } else {
-        scene.remove(spotLightHelper);
-    }
+    value ? scene.add(spotLightHelper) : scene.remove(spotLightHelper);
 }).name('Spot Light Helper');
 
 helpersFolder.add(helperControls, 'showRimLightHelper').onChange((value) => {
-    if (value) {
-        scene.add(rimLightHelper);
-    } else {
-        scene.remove(rimLightHelper);
-    }
+    value ? scene.add(rimLightHelper) : scene.remove(rimLightHelper);
 }).name('Rim Light Helper');
 
 helpersFolder.add(helperControls, 'showFillLightHelper').onChange((value) => {
-    if (value) {
-        scene.add(fillLightHelper);
-    } else {
-        scene.remove(fillLightHelper);
-    }
+    value ? scene.add(fillLightHelper) : scene.remove(fillLightHelper);
 }).name('Fill Light Helper');
 
-
-
+// Resize Handling
 window.addEventListener('resize', () => {
-    // ✅ Update sizes
     sizes.width = window.innerWidth;
     sizes.height = window.innerHeight;
-
-    // ✅ Update camera
     camera.aspect = sizes.width / sizes.height;
     camera.updateProjectionMatrix();
-
-    // ✅ Update renderer
     renderer.setSize(sizes.width, sizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    // ✅ Update composer
     composer.setSize(sizes.width, sizes.height);
     composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
+
+// Animation Loop
 let time = 0;
 const tick = () => {
     time += animationParams.flickerSpeed;
-
-    // Flickering light effect using GUI parameters
     torusLight.intensity = torusLight.intensity + Math.sin(time) * animationParams.flickerIntensity;
 
-    // Auto rotation using GUI parameters
     if (animationParams.autoRotation) {
         torus.rotation.z += 0.01 * animationParams.rotationSpeed;
-        // torus.rotation.y += 0.01 * animationParams.rotationSpeed;
     }
 
-    renderer.render(scene, camera);
     composer.render();
     window.requestAnimationFrame(tick);
 };
 tick();
 
-// gsap.to("img", {
-//     y: -50, // Move up by 50px
-//     duration: 1,
-//     ease: "power2.out",
-//     scrollTrigger: {
-//         trigger: '.banner-section h1',
-//         start: "top 10%", // Animation starts when top of element reaches 80% viewport height
-//         end: "bottom 10%", // Animation ends when top reaches 50% viewport height
-//         scrub: 1, // Smooth animation linked to scroll
-//         markers: true,
-//     }
-// });
-
-
-const images = document.querySelectorAll('.images-container .img-main ');
-
-images.forEach((img, index) => {
-    // Apply fade-in and slide-up effect
-    // gsap.from(img, {
-    //     opacity: 0,
-    //     y: 100, // Moves up while fading in
-    //     duration: 1.2,
-    //     ease: "power2.out",
-    //     scrollTrigger: {
-    //         trigger: img,
-    //         start: "top 85%", // Starts when the image reaches 85% of viewport
-    //         end: "top 50%",
-    //         scrub: 1, // Smooth scrolling effect
-    //         // markers: true
-    //     }
-    // });
-
-    // Apply Parallax Effect
-    gsap.to(img, {
-        // y: index % 2 === 0 ? "-=50" : "+=50", // Moves alternately up/down
-        y: 0,
-        opacity: 1,
-        ease: "none",
-        opacity: 1,
-        scrollTrigger: {
-            trigger: img,
-            start: "top bottom", // Starts when the image enters the viewport
-            end: "bottom bottom", // Ends when it leaves viewport
-            scrub: 1, // Smooth parallax effect
-            // markers:true
-        }
-    });
-});
-
-
+// Website Animations
 window.onload = function () {
-    gsap.from(".banner-section", {
-        opacity: 0,
-        y: 50, // Move up while appearing
-        duration: 1.5,
-        ease: "power2.out"
-    });
-
-    gsap.from(".images-container .img", {
-        opacity: 0,
-        scale: 0.8, // Slight zoom-in effect
-        stagger: 0.2, // Delays between each image animation
-        duration: 1.2,
-        ease: "power2.out"
-    });
-};
-
-// gsap.to("#loading-text", {
-//   duration: 2,
-//   scrambleText: {
-//     text: "loading",
-//     chars: "upperCase",
-//     revealDelay: 0.5,
-//     speed: 0.1
-//   },
-//   ease: "power1.inOut",
-//   repeat: -1,
-//   yoyo: true
-// });
-const split = new SplitText("#loading-text", { type: "chars" });
-gsap.to(split.chars, {
-  y: -10,
-  opacity: 0,
-  duration: 0.6,
-  yoyo: true,
-  repeat: -1,
-  stagger: 0.05,
-  ease: "sine.inOut"
-});
-
-// --- LOGIKA MUSIK AUTO-START (SMART) ---
-const music = document.getElementById('bg-music');
-const musicBtn = document.getElementById('music-btn');
-let isPlaying = false;
-
-// Fungsi menyalakan musik
-function playMusic() {
-    if (!isPlaying) {
-        music.play().then(() => {
-            isPlaying = true;
-            musicBtn.innerHTML = "MUSIC: ON 🔊";
-            
-            // Kalau sudah nyala, hapus pendeteksi biar gak jalan terus
-            document.removeEventListener('click', playMusic);
-            document.removeEventListener('scroll', playMusic);
-        }).catch(error => {
-            console.log("Menunggu interaksi user untuk memutar musik...");
+    if(typeof gsap !== "undefined") {
+        gsap.from(".banner-section", { opacity: 0, y: 50, duration: 1.5, ease: "power2.out" });
+        gsap.from(".images-container .img", { opacity: 0, scale: 0.8, stagger: 0.2, duration: 1.2, ease: "power2.out" });
+        
+        const images = document.querySelectorAll('.images-container .img-main');
+        images.forEach((img) => {
+            gsap.to(img, {
+                y: 0, opacity: 1, ease: "none",
+                scrollTrigger: { trigger: img, start: "top bottom", end: "bottom bottom", scrub: 1 }
+            });
         });
-    }
-}
 
-// Deteksi interaksi pertama (Klik atau Scroll) untuk memicu musik
-document.addEventListener('click', playMusic);
-document.addEventListener('scroll', playMusic);
-
-// Tombol Manual (Buat jaga-jaga kalau user mau matikan)
-if (musicBtn) {
-    musicBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); 
-        if (isPlaying) {
-            music.pause();
-            musicBtn.innerHTML = "MUSIC: OFF 🔇";
-            isPlaying = false;
-        } else {
-            music.play();
-            musicBtn.innerHTML = "MUSIC: ON 🔊";
-            isPlaying = true;
+        if (typeof SplitText !== "undefined") {
+            const split = new SplitText("#loading-text", { type: "chars" });
+            gsap.to(split.chars, {
+                y: -10, opacity: 0, duration: 0.6, yoyo: true, repeat: -1, stagger: 0.05, ease: "sine.inOut"
+            });
         }
-    });
-}
+        
+        // --- LOGIKA MUSIK AUTO-START (SMART) ---
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        let isPlaying = false;
+
+        function playMusic() {
+            if (!isPlaying && music) {
+                music.play().then(() => {
+                    isPlaying = true;
+                    if(musicBtn) musicBtn.innerHTML = "MUSIC: ON 🔊";
+                    document.removeEventListener('click', playMusic);
+                    document.removeEventListener('scroll', playMusic);
+                }).catch(error => { console.log("Waiting for interaction..."); });
+            }
+        }
+        document.addEventListener('click', playMusic);
+        document.addEventListener('scroll', playMusic);
+
+        if (musicBtn) {
+            musicBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (isPlaying) {
+                    music.pause();
+                    musicBtn.innerHTML = "MUSIC: OFF 🔇";
+                    isPlaying = false;
+                } else {
+                    music.play();
+                    musicBtn.innerHTML = "MUSIC: ON 🔊";
+                    isPlaying = true;
+                }
+            });
+        }
+    }
+};

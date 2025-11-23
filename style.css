@@ -230,3 +230,23 @@ p                                       {color: #949494;}
     color: #000;
     transform: scale(1.1);
 }
+
+/* --- VIDEO BACKGROUND --- */
+#bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -2;          /* Paling belakang */
+    object-fit: cover;    /* Full screen tanpa gepeng */
+    filter: brightness(0.5); /* Gelapkan dikit biar patung dan teks jelas */
+}
+
+/* Pastikan Canvas 3D transparan */
+.webgl {
+    background: transparent !important;
+    z-index: -1;
+}

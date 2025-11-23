@@ -289,10 +289,6 @@ groupFolder.add(group.rotation, 'z', 0, Math.PI * 2, 0.1).name('Rotation Z');
 
 gui.close();
 // Scene Controls
-const sceneFolder = gui.addFolder('Scene');
-sceneFolder.addColor({ backgroundColor: '#000000' }, 'backgroundColor').onChange((value) => {
-    scene.background = new THREE.Color(value);
-}).name('Background Color');
 
 // Renderer Controls
 const rendererFolder = gui.addFolder('Renderer');

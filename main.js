@@ -13,9 +13,6 @@ const canvas = document.querySelector('canvas.webgl');
 // Group for torus and model
 const group = new THREE.Group();
 scene.add(group);
-// Group untuk objek yang BERPUTAR (Pit & Cincin)
-const group = new THREE.Group();
-scene.add(group);
 
 // BARU: Group untuk objek yang DIAM (Malaikat di belakang)
 const groupStatic = new THREE.Group();

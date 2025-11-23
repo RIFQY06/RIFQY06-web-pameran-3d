@@ -25,28 +25,79 @@ p                                       {color: #949494;}
 .banner-section a:hover:after           {width: 100%;left: 0;right: unset;}
 .banner-section a:hover img             {transform: rotate(45deg);}
 /*  */
-.images-container                       {display: flex;justify-content: space-between;flex-wrap: wrap;padding: 100px 40px;}
-.images-container .img                  {width: 100%;display: flex;}
-.images-container .img:nth-child(even)  {justify-content: end;}
-.images-container img                   {aspect-ratio: 16 / 9;object-fit: cover;transition: all ease 1s;}
-.img-main                               {max-width: 30vw;width: 100%;border: 1px solid transparent;overflow: hidden;position: relative;line-height: 0;opacity: 0;transition: all ease-in-out 0.15s;}
-.img-main:hover:after                   {content: '';position: absolute;top: -100%;left: -100%;height: 200%;width: 200%;background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);animation: slide 1s forwards;filter: blur(33px);}
-/*  */
-@keyframes slide                        {
-    from                                { top: -100%; left: -100%; }
-    to                                  { top: 100%; left: 100%; }
+
+/* --- GAYA GALERI PINTEREST (MASONRY) --- */
+
+/* --- GAYA GALERI ZIG-ZAG (Kiri Kanan) --- */
+
+.images-container {
+    display: flex;
+    flex-direction: column; /* Susun ke bawah satu per satu */
+    gap: 50px;              /* Jarak antar foto */
+    padding: 50px 10%;      /* Padding kiri kanan biar gak mepet pinggir */
+    
+    /* PENTING: Ini biar galerinya turun ke bawah, gak nutupin Judul Utama */
+    margin-top: 100vh;      
+    position: relative;
+    z-index: 10;            /* Pastikan di atas background */
 }
-.img-main:hover img                     {transform: scale(1.2);}
-.img-main:hover                         {border-color: #5599FF;}
-.zoom-img img                           {aspect-ratio: 16 / 9;object-fit: cover;transition: all ease 0.2s;object-position: top;}
-.images-container img:hover             {transform: scale(1.1) ;opacity: 1;}
-section{min-height: 100vh;}
-/*  */
-html.lenis, html.lenis body             {height: auto;}
-.lenis.lenis-smooth                     {scroll-behavior: auto !important;}
-.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior: contain;}
-.lenis.lenis-stopped                    {overflow: hidden;}
-.lenis.lenis-scrolling iframe           {pointer-events: none;}
+
+.img {
+    width: 40%;             /* Lebar foto cuma 40% layar, sisanya kosong buat patung */
+    display: block;
+}
+
+/* --- LOGIKA ZIG-ZAG --- */
+
+/* Foto Ganjil (1, 3, 5...) Rata KIRI */
+.img:nth-child(odd) {
+    align-self: flex-start;
+    text-align: left;
+}
+
+/* Foto Genap (2, 4, 6...) Rata KANAN */
+.img:nth-child(even) {
+    align-self: flex-end;
+    text-align: right;
+    margin-top: 50px;       /* Turunin dikit biar gak sejajar kaku */
+}
+
+/* --- STYLE GAMBARNYA --- */
+.img-main {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Kasih bayangan biar pop-up */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.img-main img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+/* Efek Hover */
+.img-main:hover {
+    border-color: #D6F844;
+    transform: scale(1.02);
+}
+
+/* --- RESPONSIVE (HP) --- */
+@media screen and (max-width: 768px) {
+    .images-container {
+        padding: 50px 20px;
+        gap: 30px;
+    }
+    .img {
+        width: 100%; /* Kalau di HP, foto jadi full lebar (biar jelas) */
+    }
+    .img:nth-child(even) {
+        margin-top: 0;
+    }
+}
  
  
 @keyframes spin                         {

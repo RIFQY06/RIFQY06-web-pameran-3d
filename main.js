@@ -131,9 +131,9 @@ loadModel(
 // --- MODEL 2: MALAIKAT (Diam di Belakang) ---
 loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/angel/scene.gltf', 
-    { x: 0, y: 1, z: -3 },   // Posisi: Naik (y:6) & Mundur (z:-4)
+    { x: 0, y: 0, z: -3 },   // Posisi: Naik (y:6) & Mundur (z:-4)
     { x: 0, y: 0, z: 0 }, 
-    3,                       // Scale: 5 (Sesuaikan jika kekecilan)
+    1,                       // Scale: 5 (Sesuaikan jika kekecilan)
     groupStatic              // Masuk ke Group DIAM
 );
 

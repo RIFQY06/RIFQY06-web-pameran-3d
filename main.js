@@ -111,8 +111,7 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
     },
     (xhr) => { /* Progress */ },
     (error) => { console.error('Error loading model', error); });
-};
-        }
+        
     },
     (xhr) => {
         // Optional: Progress feedback

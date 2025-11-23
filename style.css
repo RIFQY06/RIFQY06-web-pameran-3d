@@ -85,17 +85,46 @@ p                                       {color: #949494;}
     transform: scale(1.02);
 }
 
-/* --- RESPONSIVE (HP) --- */
-@media screen and (max-width: 768px) {
+/* --- MOBILE RESPONSIVE (TETAP ZIG-ZAG) --- */
+
+/* Tablet & HP */
+@media screen and (max-width: 1024px) {
+    .header {
+        padding: 15px 20px; 
+        flex-direction: column; 
+        gap: 20px;
+    }
+    
+    .nav-link-container {
+        gap: 20px; 
+        padding-left: 15px; 
+        flex-wrap: wrap; 
+        justify-content: center;
+    }
+    
+    h1 {font-size: 50px; line-height: 70px;}
+    
+    /* SETTINGAN GALERI HP BIAR TETAP ZIG-ZAG */
     .images-container {
-        padding: 50px 20px;
-        gap: 30px;
+        column-count: 2; /* Paksa tetap 2 kolom */
+        column-gap: 15px;
+        padding: 50px 15px;
+        margin-top: 80vh; /* Jarak dari atas */
     }
+
     .img {
-        width: 100%; /* Kalau di HP, foto jadi full lebar (biar jelas) */
+        width: 100%;
+        margin-bottom: 15px;
     }
+
+    /* Pertahankan efek turun-naik (Zig-zag) */
     .img:nth-child(even) {
-        margin-top: 0;
+        margin-top: 40px; /* Foto genap turun dikit */
+        text-align: right;
+    }
+    
+    .img:nth-child(odd) {
+        text-align: left;
     }
 }
  
@@ -175,4 +204,29 @@ p                                       {color: #949494;}
     .header                             {padding: 10px 20px;}
     h1                                  {font-size: 50px;line-height: 60px;}
     .banner-section                     {margin-top: 20px;}
+}
+
+/* --- TOMBOL MUSIK --- */
+.music-toggle {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid #D6F844;
+    color: #D6F844;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-family: "Golos Text", sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.music-toggle:hover {
+    background: #D6F844;
+    color: #000;
+    transform: scale(1.1);
 }

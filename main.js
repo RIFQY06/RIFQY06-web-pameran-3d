@@ -78,9 +78,10 @@ const rimLightHelper = new THREE.PointLightHelper(rimLight);
 // scene.add( rimLightHelper);
 
 // GLTF Loader
+// GLTF Loader
 const gltfLoader = new GLTFLoader();
-// Update fungsi ini agar menerima parameter 'scale'
-// Fungsi loadModel yang diperbarui (mendukung targetGroup)
+
+// Fungsi loadModel yang diperbarui (Bersih & Benar)
 const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, targetGroup = group) => {
     gltfLoader.load(path, (gltf) => {
         const mesh = gltf.scene;
@@ -95,10 +96,9 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
         
         mesh.scale.set(scale, scale, scale); 
         
-        // MASUKKAN KE GROUP YANG DIPILIH (Bukan cuma 'group' biasa)
         targetGroup.add(mesh); 
         
-        console.log("Model loaded to group");
+        console.log("Model loaded");
 
         // Loader logic
         const loaderEl = document.getElementById('preloader');
@@ -109,12 +109,7 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
             });
         }
     },
-    (xhr) => { /* Progress */ },
-    (error) => { console.error('Error loading model', error); });
-        
-    },
     (xhr) => {
-        // Optional: Progress feedback
         const percent = (xhr.loaded / xhr.total) * 100;
         console.log(`Loading model: ${percent.toFixed(0)}%`);
     },

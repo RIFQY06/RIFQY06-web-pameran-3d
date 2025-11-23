@@ -146,11 +146,10 @@ camera.position.set(0, 2, 2);
 scene.add(camera);
 
 // Renderer
-// Renderer dengan background transparan (alpha: true)
 const renderer = new THREE.WebGLRenderer({ 
     canvas: canvas, 
-    alpha: true,       // <--- INI YANG PENTING BIAR VIDEO KELIHATAN
-    antialias: true    // Biar pinggiran patung halus
+    alpha: true,       // <--- INI KUNCINYA (Bikin Transparan)
+    antialias: true 
 });
 // Scroll-based rotation for the group
 if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {

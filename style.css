@@ -1,216 +1,90 @@
-/* Copyright (c) 2025 by Yudiz Solutions Limited (https://codepen.io/yudizsolutions/pen/vENNWxx) */
+/* Copyright (c) 2025 by Yudiz Solutions Limited */
 @import url('https://fonts.googleapis.com/css2?family=Golos+Text:wght@400..900&display=swap');
  
-*                                       {margin: 0;padding: 0;box-sizing: border-box;}
-img                                     {width: 100%;height: auto;}
-button,a                                {border: 1px solid transparent;background: transparent;display: flex;align-items: center;justify-content: center;text-decoration: none;color: #EBEBEB;}
-body                                    {font-family: "Golos Text";}
-/*  */
-.webgl                                  {position: fixed;left: 0;top: 0;width: 100vw;height: 100dvh;z-index: -1;}
-.header                                 {display: flex;align-items: center;justify-content: space-between;padding: 34px 40px;}
-.logo                                   {max-width: 270px;display: flex;align-self: center;justify-content: center;}
-.nav-link-container                     {display: flex;align-items: center;gap: 40px;}
-.nav-link-container                     {background: #0F0F0F;padding-left: 30px;}
-.nav-link-container button img          {width: 20px;aspect-ratio: 1;}
-.nav-link-container a                   {font-size: 14px;text-transform: uppercase;transition: all ease-in-out 0.15s;}
-.nav-link-container a:hover             {color: #D6F844;}
-.toggle-btn                             {background: #515151;padding: 16px;}
-.banner-section                         {max-width: 1122px;margin: 0 auto;text-align: center;}
-h1                                      {font-size: 100px;line-height: 140px;color: white;font-weight: 900;text-transform: uppercase;}
-p                                       {color: #949494;}
-/*  */
-.banner-section a                       {display: flex;align-items: center;gap: 4px;color: #D6F844;position: relative;max-width: fit-content;margin: 30px auto 0;font-weight: 500;text-transform: uppercase;}
-.banner-section a img                   {width: 18px;aspect-ratio: 1;transition: all ease-in-out 0.15s;transform-origin: center;}
-.banner-section a::after                {content: '';position: absolute;right: 0;top: calc(100% + 2px);width: 0%;height: 1px;background: #D6F844;transition: all ease-in-out 0.15s;}
-.banner-section a:hover:after           {width: 100%;left: 0;right: unset;}
-.banner-section a:hover img             {transform: rotate(45deg);}
-/*  */
+* {margin: 0; padding: 0; box-sizing: border-box;}
+img {width: 100%; height: auto;}
+button, a {border: 1px solid transparent; background: transparent; display: flex; align-items: center; justify-content: center; text-decoration: none; color: #EBEBEB;}
+body {font-family: "Golos Text";}
 
-/* --- GAYA GALERI PINTEREST (MASONRY) --- */
+/* --- 3D CANVAS & VIDEO BACKGROUND --- */
+.webgl {
+    position: fixed; 
+    left: 0; top: 0; 
+    width: 100vw; height: 100dvh; 
+    z-index: -1; /* Di atas video, di bawah teks */
+    background: transparent !important; /* WAJIB TRANSPARAN */
+}
 
-/* --- GAYA GALERI ZIG-ZAG (Kiri Kanan) --- */
+#bg-video {
+    position: fixed;
+    right: 0; bottom: 0;
+    min-width: 100%; min-height: 100%;
+    width: auto; height: auto;
+    z-index: -2; /* Paling Belakang */
+    object-fit: cover;
+    filter: brightness(0.6); /* Gelapkan dikit biar teks jelas */
+}
 
+/* --- HEADER --- */
+.header {display: flex; align-items: center; justify-content: space-between; padding: 34px 40px;}
+.logo {max-width: 270px; display: flex; align-self: center; justify-content: center;}
+.nav-link-container {display: flex; align-items: center; gap: 40px; background: #0F0F0F; padding-left: 30px;}
+.nav-link-container button img {width: 20px; aspect-ratio: 1;}
+.nav-link-container a {font-size: 14px; text-transform: uppercase; transition: all ease-in-out 0.15s;}
+.nav-link-container a:hover {color: #D6F844;}
+.toggle-btn {background: #515151; padding: 16px;}
+
+/* --- BANNER SECTION --- */
+.banner-section {max-width: 1122px; margin: 0 auto; text-align: center;}
+h1 {font-size: 100px; line-height: 140px; color: white; font-weight: 900; text-transform: uppercase;}
+p {color: #949494;}
+
+.banner-section a {display: flex; align-items: center; gap: 4px; color: #D6F844; position: relative; max-width: fit-content; margin: 30px auto 0; font-weight: 500; text-transform: uppercase;}
+.banner-section a img {width: 18px; aspect-ratio: 1; transition: all ease-in-out 0.15s; transform-origin: center;}
+.banner-section a::after {content: ''; position: absolute; right: 0; top: calc(100% + 2px); width: 0%; height: 1px; background: #D6F844; transition: all ease-in-out 0.15s;}
+.banner-section a:hover:after {width: 100%; left: 0; right: unset;}
+.banner-section a:hover img {transform: rotate(45deg);}
+
+/* --- GALERI ZIG-ZAG (MASONRY) --- */
 .images-container {
     display: flex;
-    flex-direction: column; /* Susun ke bawah satu per satu */
-    gap: 50px;              /* Jarak antar foto */
-    padding: 50px 10%;      /* Padding kiri kanan biar gak mepet pinggir */
-    
-    /* PENTING: Ini biar galerinya turun ke bawah, gak nutupin Judul Utama */
-    margin-top: 100vh;      
+    flex-direction: column;
+    gap: 50px;
+    padding: 50px 10%;
+    margin-top: 100vh; /* Turun 1 layar full */
     position: relative;
-    z-index: 10;            /* Pastikan di atas background */
+    z-index: 10;
 }
 
 .img {
-    width: 40%;             /* Lebar foto cuma 40% layar, sisanya kosong buat patung */
+    width: 40%;
     display: block;
 }
 
-/* --- LOGIKA ZIG-ZAG --- */
+/* Logika Zig-Zag */
+.img:nth-child(odd) { align-self: flex-start; text-align: left; }
+.img:nth-child(even) { align-self: flex-end; text-align: right; margin-top: 50px; }
 
-/* Foto Ganjil (1, 3, 5...) Rata KIRI */
-.img:nth-child(odd) {
-    align-self: flex-start;
-    text-align: left;
-}
-
-/* Foto Genap (2, 4, 6...) Rata KANAN */
-.img:nth-child(even) {
-    align-self: flex-end;
-    text-align: right;
-    margin-top: 50px;       /* Turunin dikit biar gak sejajar kaku */
-}
-
-/* --- STYLE GAMBARNYA --- */
+/* Style Gambar */
 .img-main {
     width: 100%;
     overflow: hidden;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Kasih bayangan biar pop-up */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
 }
 
 .img-main img {
-    width: 100%;
-    height: auto;
-    display: block;
+    width: 100%; height: auto; display: block;
     transition: transform 0.5s ease;
 }
 
-/* Efek Hover */
-.img-main:hover {
-    border-color: #D6F844;
-    transform: scale(1.02);
-}
-
-/* --- MOBILE RESPONSIVE (TETAP ZIG-ZAG) --- */
-
-/* Tablet & HP */
-@media screen and (max-width: 1024px) {
-    .header {
-        padding: 15px 20px; 
-        flex-direction: column; 
-        gap: 20px;
-    }
-    
-    .nav-link-container {
-        gap: 20px; 
-        padding-left: 15px; 
-        flex-wrap: wrap; 
-        justify-content: center;
-    }
-    
-    h1 {font-size: 50px; line-height: 70px;}
-    
-    /* SETTINGAN GALERI HP BIAR TETAP ZIG-ZAG */
-    .images-container {
-        column-count: 2; /* Paksa tetap 2 kolom */
-        column-gap: 15px;
-        padding: 50px 15px;
-        margin-top: 80vh; /* Jarak dari atas */
-    }
-
-    .img {
-        width: 100%;
-        margin-bottom: 15px;
-    }
-
-    /* Pertahankan efek turun-naik (Zig-zag) */
-    .img:nth-child(even) {
-        margin-top: 40px; /* Foto genap turun dikit */
-        text-align: right;
-    }
-    
-    .img:nth-child(odd) {
-        text-align: left;
-    }
-}
- 
- 
-@keyframes spin                         {
-  to                                    { transform: rotate(360deg); }
-}
-#preloader                              {position: fixed; top: 0;left: 0;width: 100%;height: 100%;z-index: 1001;}
-.loder-parent                           {position: absolute;left: 50%;top: 50%;transform: translate(-50%, -50%);}
-#loader                                 {display: block;position: relative;width: 300px;height: 300px;border-radius: 50%;border: 5px solid transparent;border-top-color: #D6F844;-webkit-animation: spin 2s linear infinite;animation: spin 2s linear infinite;}
-#loader:before                          {content: "";position: absolute;top: 5px;left: 5px;right: 5px;bottom: 5px;border-radius: 50%;border: 4px solid transparent;border-top-color: #D6F844;-webkit-animation: spin 3s linear infinite;animation: spin 3s linear infinite;}
-#loader:after                           {content: "";position: absolute;top: 15px;left: 15px;right: 15px;bottom: 15px;border-radius: 50%;border: 3px solid transparent;border-top-color: #D6F844;-webkit-animation: spin 1.5s linear infinite;animation: spin 1.5s linear infinite;}
-@-webkit-keyframes spin                 {
-    0%                                  {-webkit-transform: rotate(0deg);-ms-transform: rotate(0deg);transform: rotate(0deg);}
-    100%                                {-webkit-transform: rotate(360deg);-ms-transform: rotate(360deg);transform: rotate(360deg);}
-}
-/* Movie poster with glare effect */
-.loader-text                            {position: absolute;left: 50%;transform: translate(-50%, -50%);top: 50%;font-size: 2rem;line-height: 1;font-weight: 700;color: #D6F844;}
-.loader-info-text{
-    position: absolute;left: 50%;transform: translate(-50%,-50%);top: 70%;font-size: 1rem;line-height: 1;font-weight: 400;color: #D6F844;   }
-.dg.ac                                  {background-color: rgba(0, 0, 0, 0.8)}
- 
-/* ===== MOBILE RESPONSIVE ===== */
- 
-/* Tablet and smaller screens */
-@media screen and (max-width: 1024px)   {
-    .header                             {padding: 20px 30px;}
-    .nav-link-container                 {gap: 25px;padding-left: 20px;}
-    h1                                  {font-size: 80px;line-height: 120px;}
-}
- 
-/* Mobile landscape and smaller tablets */
-@media screen and (max-width: 768px)    {
-    .header                             {padding: 15px 20px;flex-direction: column;gap: 20px;}
-    .logo                               {max-width: 200px;}
-    .nav-link-container                 {gap: 20px;padding-left: 15px;flex-wrap: wrap;justify-content: center;}
-    
-    .nav-link-container a               {font-size: 12px;}
-    h1                                  {font-size: 60px;line-height: 80px;}
-    .banner-section                     {padding: 0 20px;}
-    .images-container                   {padding: 40px 20px;flex-direction: column;align-items: center;gap: 30px;}
-    .img-main                           {max-width: 35vw;}
-}
-@media screen and (max-width: 575px)    {
-    .img-main                           {max-width: 50vw;width: 100%;}
-}
-/* Mobile portrait */
-@media screen and (max-width: 480px)    {
-    .header                             {padding: 15px;}
-    .logo                               {max-width: 150px;}
-    .nav-link-container                 {gap: 10px;padding-left: 10px;padding-right: 0px;}    
-    .nav-link-container a               {font-size: 11px;}    
-    .toggle-btn                         {padding: 12px;}
-    h1                                  {font-size: 40px;line-height: 50px;}
-    .banner-section                     {padding: 0 15px;}
-    .banner-section a                   {margin: 20px auto 0;font-size: 14px;}
-    .images-container                   {padding: 40px 15px;gap: 20px;}    
-    /* Loader adjustments for mobile */
-    #loader                             {width: 200px;height: 200px;}    
-    .loader-text                        {font-size: 1.5rem;}
-}
- 
-/* Very small screens */
-@media screen and (max-width: 360px)    {
-    .header                             {padding: 10px;}
-    .nav-link-container                 {gap: 10px;padding-left: 8px;padding-right: 8px;}
-    .nav-link-container a               {font-size: 10px;}
-    h1                                  {font-size: 32px;line-height: 40px;}    
-    .banner-section                     {padding: 0 10px;}
-    .images-container                   {padding: 30px 10px;}    
-    #loader                             {width: 150px;height: 150px;}
-    .loader-text                        {font-size: 1.2rem;}
-}
- 
-/* Landscape orientation specific */
-@media screen and (max-height: 500px) and (orientation: landscape) {
-    .header                             {padding: 10px 20px;}
-    h1                                  {font-size: 50px;line-height: 60px;}
-    .banner-section                     {margin-top: 20px;}
-}
+.img-main:hover { border-color: #D6F844; transform: scale(1.02); }
 
 /* --- TOMBOL MUSIK --- */
 .music-toggle {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
+    position: fixed; bottom: 30px; right: 30px;
     z-index: 1000;
     background: rgba(15, 15, 15, 0.8);
     border: 1px solid #D6F844;
@@ -218,50 +92,61 @@ p                                       {color: #949494;}
     padding: 10px 20px;
     border-radius: 30px;
     font-family: "Golos Text", sans-serif;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 12px; font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(5px);
 }
+.music-toggle:hover { background: #D6F844; color: #000; transform: scale(1.1); }
 
-.music-toggle:hover {
-    background: #D6F844;
-    color: #000;
-    transform: scale(1.1);
-}
-
-/* --- SETTING VIDEO BACKGROUND --- */
-#bg-video {
-    position: fixed;      /* Kunci posisi di layar */
-    top: 0; left: 0;      /* Mulai dari pojok kiri atas */
-    width: 100vw;         /* Lebar full layar */
-    height: 100vh;        /* Tinggi full layar */
-    object-fit: cover;    /* Potong video biar gak gepeng */
-    z-index: -2;          /* Taruh di lapisan paling belakang */
-    filter: brightness(0.6); /* Gelapkan dikit biar teks putih terbaca */
-}
-
-/* Paksa Canvas 3D jadi transparan */
-.webgl {
-    background: transparent !important;
-    z-index: -1;
-}
-
-
-/* --- EFEK KURSOR TUBES (FORCE VISIBLE) --- */
+/* --- KURSOR TUBES (NEON) --- */
 #cursor-canvas {
-    position: fixed !important;    /* Wajib nempel di layar */
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;       /* Lebar penuh */
-    height: 100vh !important;      /* Tinggi penuh */
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    width: 100vw !important; height: 100vh !important;
+    z-index: 9999 !important; /* Paling Depan */
+    pointer-events: none;
+    background: transparent;
+}
+
+/* --- LOADER --- */
+html.lenis, html.lenis body {height: auto;}
+.lenis.lenis-smooth {scroll-behavior: auto !important;}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior: contain;}
+.lenis.lenis-stopped {overflow: hidden;}
+.lenis.lenis-scrolling iframe {pointer-events: none;}
+ 
+@keyframes spin { to { transform: rotate(360deg); } }
+#preloader {position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001;}
+.loader-info-text{ position: absolute; left: 50%; transform: translate(-50%,-50%); top: 70%; font-size: 1rem; line-height: 1; font-weight: 400; color: #D6F844; }
+
+/* --- MOBILE RESPONSIVE --- */
+@media screen and (max-width: 1024px) {
+    .header {padding: 20px 30px;}
+    .nav-link-container {gap: 25px; padding-left: 20px;}
+    h1 {font-size: 80px; line-height: 120px;}
     
-    z-index: 2147483647 !important; /* Angka z-index tertinggi di browser */
-    
-    background: transparent !important; /* Wajib bening/bolong */
-    pointer-events: none !important;    /* Biar klik tembus ke bawah */
-    
-    /* --- HAPUS BARIS INI NANTI KALAU SUDAH MUNCUL --- */
-  
+    .images-container {
+        column-count: 2;
+        column-gap: 15px;
+        padding: 50px 15px;
+        margin-top: 80vh;
+    }
+    .img { width: 100%; margin-bottom: 15px; }
+    .img:nth-child(even) { margin-top: 40px; text-align: right; }
+    .img:nth-child(odd) { text-align: left; }
+}
+ 
+@media screen and (max-width: 768px) {
+    .header {padding: 15px 20px; flex-direction: column; gap: 20px;}
+    .logo {max-width: 200px;}
+    .nav-link-container {gap: 20px; padding-left: 15px; flex-wrap: wrap; justify-content: center;}
+    .nav-link-container a {font-size: 12px;}
+    h1 {font-size: 60px; line-height: 80px;}
+    .banner-section {padding: 0 20px;}
+}
+
+@media screen and (max-width: 480px) {
+    h1 {font-size: 40px; line-height: 50px;}
+    .banner-section a {margin: 20px auto 0; font-size: 14px;}
 }

@@ -107,15 +107,15 @@ loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/source/scene.gltf', 
     { x: 0, y: 0, z: 0 }, 
     { x: 0, y: 0, z: 0 }, 
-    4,      
+    1,      
     group
 );
 
 loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/angel/scene.gltf', 
-    { x: 0, y: 6, z: -4 },   
+    { x: 0, y: 0, z: -2 },   
     { x: 0, y: 0, z: 0 }, 
-    5,
+    1,
     groupStatic
 );
 

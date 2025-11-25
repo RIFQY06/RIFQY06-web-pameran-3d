@@ -152,4 +152,33 @@
     <button id="music-btn" class="music-toggle">
         MUSIC: OFF 🔇
     </button>
+    <script type="module">
+    // 1. Import Library dengan cara yang benar
+    import TubesCursor from "https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js";
+
+    // 2. Jalankan Kursor
+    const cursorCanvas = document.getElementById('cursor-canvas');
+    
+    if (cursorCanvas) {
+        const cursorApp = TubesCursor(cursorCanvas, {
+            tubes: {
+                colors: ["#f967fb", "#53bc28", "#6958d5"], 
+                lights: {
+                    intensity: 200,
+                    colors: ["#83f36e", "#fe8a2e", "#ff008a", "#60aed5"]
+                }
+            }
+        });
+
+        // 3. Efek Klik Ganti Warna
+        document.body.addEventListener('click', () => {
+            const colors = Array(3).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
+            const lights = Array(4).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
+            cursorApp.tubes.setColors(colors);
+            cursorApp.tubes.setLightsColors(lights);
+        });
+        
+        console.log("Kursor Berhasil Dimuat!");
+    }
+</script>
 </html>

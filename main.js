@@ -413,22 +413,25 @@ window.onload = function () {
 };
 
 // --- LOGIKA EFEK KURSOR (TUBES NEON) ---
-const cursorApp = TubesCursor(document.getElementById('cursor-canvas'), {
-  tubes: {
-    colors: ["#f967fb", "#53bc28", "#6958d5"], // Warna-warni neon
-    lights: {
-      intensity: 200,
-      colors: ["#83f36e", "#fe8a2e", "#ff008a", "#60aed5"]
-    }
-  }
-});
+// --- LOGIKA EFEK KURSOR (Fixed) ---
+// Kita pakai 'window.TubesCursor' karena library-nya dimuat lewat HTML
+if (window.TubesCursor) {
+    const cursorApp = window.TubesCursor(document.getElementById('cursor-canvas'), {
+        tubes: {
+            colors: ["#f967fb", "#53bc28", "#6958d5"], 
+            lights: {
+                intensity: 200,
+                colors: ["#83f36e", "#fe8a2e", "#ff008a", "#60aed5"]
+            }
+        }
+    });
 
-// Fitur ganti warna saat klik mouse
-document.body.addEventListener('click', () => {
-  const colors = Array(3).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
-  const lights = Array(4).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
-  
-  // Update warna kursor
-  cursorApp.tubes.setColors(colors);
-  cursorApp.tubes.setLightsColors(lights);
-});
+    // Fitur ganti warna saat klik mouse
+    document.body.addEventListener('click', () => {
+        const colors = Array(3).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
+        const lights = Array(4).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
+        
+        cursorApp.tubes.setColors(colors);
+        cursorApp.tubes.setLightsColors(lights);
+    });
+}

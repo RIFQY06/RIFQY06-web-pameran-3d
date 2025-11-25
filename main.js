@@ -219,12 +219,18 @@ gui.close();
 
 // Resize
 window.addEventListener('resize', () => {
+    // Kita pakai window.innerWidth/Height agar pas selayar saja
     sizes.width = window.innerWidth;
     sizes.height = window.innerHeight;
+
     camera.aspect = sizes.width / sizes.height;
     camera.updateProjectionMatrix();
+
     renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(1); // <--- Pastikan ini 1
+
     composer.setSize(sizes.width, sizes.height);
+    composer.setPixelRatio(1); // <--- Pastikan ini 1
 });
 
 // Animation Loop

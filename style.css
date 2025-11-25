@@ -10,7 +10,7 @@ body {font-family: "Golos Text";}
 .webgl {
     position: fixed; 
     left: 0; top: 0; 
-    width: 100vw; height: 100dvh; 
+    width: 100vw; height: 100vh; 
     z-index: -1; /* Di atas video, di bawah teks */
     background: transparent !important; /* WAJIB TRANSPARAN */
 }

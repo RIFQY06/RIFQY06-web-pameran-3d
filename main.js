@@ -1,4 +1,4 @@
-// 1. IMPORT PALING ATAS (WAJIB)
+
 import TubesCursor from "https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js";
 import * as THREE from "https://unpkg.com/three@0.161.0/build/three.module.js";
 import { OrbitControls } from "https://unpkg.com/three@0.161.0/examples/jsm/controls/OrbitControls.js";
@@ -12,12 +12,15 @@ import { UnrealBloomPass } from "https://unpkg.com/three@0.161.0/examples/jsm/po
 const scene = new THREE.Scene();
 const canvas = document.querySelector('canvas.webgl');
 
-// --- SETUP GROUP ---
+// --- PERBAIKAN GROUP DI SINI (HANYA SATU KALI DEFINISI) ---
+// Group untuk objek yang BERPUTAR (Pit & Cincin)
 const group = new THREE.Group();
 scene.add(group);
 
+// Group untuk objek yang DIAM (Malaikat di belakang)
 const groupStatic = new THREE.Group();
 scene.add(groupStatic);
+// ----------------------------------------------------------
 
 // Floor
 const floor = new THREE.Mesh(
@@ -27,7 +30,7 @@ const floor = new THREE.Mesh(
 floor.rotation.x = -Math.PI * 0.5;
 // scene.add(floor);
 
-// Torus
+// Torus with emissive material
 const geometry = new THREE.TorusGeometry(0.2, 0.04, 4, 20);
 const material = new THREE.MeshStandardMaterial({
     color: 0x2555FD,
@@ -37,17 +40,19 @@ const material = new THREE.MeshStandardMaterial({
 });
 const torus = new THREE.Mesh(geometry, material);
 torus.position.set(0, 1.8, 0);
-group.add(torus);
+group.add(torus); // Masuk ke group
 
 const BLOOM_LAYER = 1;
 torus.layers.enable(BLOOM_LAYER);
 
 // Lighting
-const torusLight = new THREE.PointLight(0xffffff, 0.01, 0.25, 0.0004);
-torusLight.position.set(0, 1.8, -2);
+// Move the PointLight inside the Torus
+const torusLight = new THREE.PointLight(0xffffff, 0.01, 0.25, 0.0004); 
+torusLight.position.set(0, 1.8, -2); 
 scene.add(torusLight);
 
 const torusLightHelper = new THREE.PointLightHelper(torusLight);
+// scene.add(torusLightHelper);
 
 const spotLight = new THREE.SpotLight(0xffffff, 17, 100, 10, 10);
 spotLight.position.set(0, 3, 0.5);
@@ -55,19 +60,27 @@ spotLight.castShadow = true;
 scene.add(spotLight);
 
 const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+// scene.add(spotLightHelper);
 
+// Soft fill light from the left
 const fillLight = new THREE.PointLight(0x5599FF, 30, 5, 2);
 fillLight.position.set(-2, 2, 2);
+// scene.add(fillLight);
 
+// Rim light from the back for depth
 const rimLight = new THREE.PointLight(0xffffff, 20, 1, 1.5);
 rimLight.position.set(1, 1, 1);
 scene.add(rimLight);
 
 const fillLightHelper = new THREE.PointLightHelper(fillLight);
 const rimLightHelper = new THREE.PointLightHelper(rimLight);
+// scene.add(fillLightHelper);
+// scene.add(rimLightHelper);
 
 // --- GLTF LOADER FUNCTION (SUDAH DIPERBAIKI) ---
 const gltfLoader = new GLTFLoader();
+
+// Fungsi ini sudah mendukung SCALE dan TARGET GROUP
 const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, targetGroup = group) => {
     gltfLoader.load(path, (gltf) => {
         const mesh = gltf.scene;
@@ -75,6 +88,7 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
             if (child.isMesh) {
                 child.castShadow = true;
                 child.receiveShadow = true;
+                // Fix Silau Malaikat
                 if(child.material) {
                     child.material.roughness = 0.8; 
                     child.material.metalness = 0.1;
@@ -90,6 +104,7 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
         
         console.log("Model loaded");
 
+        // Hide loader when model is ready
         const loaderEl = document.getElementById('preloader');
         if (loaderEl) {
             gsap.to(loaderEl, {
@@ -99,7 +114,8 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
         }
     },
     (xhr) => {
-        // Progress
+        const percent = (xhr.loaded / xhr.total) * 100;
+        console.log(`Loading model: ${percent.toFixed(0)}%`);
     },
     (error) => {
         console.error('Error loading model', error);
@@ -107,34 +123,37 @@ const loadModel = (path, position, rotation = { x: 0, y: 0, z: 0 }, scale = 1, t
 };
 
 // --- LOAD MODELS ---
-// 1. Pit (Depan)
+
+// 1. PATUNG PIT (Berputar di Depan)
 loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/source/scene.gltf', 
     { x: 0, y: 0, z: 0 }, 
     { x: 0, y: 0, z: 0 }, 
     1,      
-    group
+    group   // Masuk Group Putar
 );
 
-// 2. Malaikat (Belakang)
+// 2. PATUNG MALAIKAT (Diam di Belakang)
 loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/angel/scene.gltf', 
-    { x: 0, y: 0, z: -3 },   
+    { x: 0, y: 0, z: -2 },   
     { x: 0, y: 0, z: 0 }, 
-    2,
-    groupStatic
+    1.2,
+    groupStatic // Masuk Group Diam
 );
 
-// Sizes & Camera
+// Sizes
 const sizes = { width: window.innerWidth, height: window.innerHeight };
+
+// Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.set(0, 2, 2);
 scene.add(camera);
 
-// --- RENDERER (FIX TRANSPARAN) ---
+// --- RENDERER (SUDAH FIX TRANSPARAN) ---
 const renderer = new THREE.WebGLRenderer({ 
     canvas: canvas,
-    alpha: true,       // Transparan
+    alpha: true,       // Transparan agar video terlihat
     antialias: true    // Halus
 });
 renderer.shadowMap.enabled = true;
@@ -144,16 +163,25 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 // Scroll Animation
 if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
+
     gsap.to(group.rotation, {
         y: "+=6.28",
         scrollTrigger: {
-            trigger: "body", start: "top top", end: "bottom bottom", scrub: 1
+            trigger: "body",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1,
         }
     });
+
     gsap.to(camera.position, {
-        y: 1, z: 1.7,
+        y: 1,
+        z: 1.7,
         scrollTrigger: {
-            trigger: "body", start: "top top", end: "bottom bottom", scrub: 1
+            trigger: "body",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1,
         }
     });
 }
@@ -162,12 +190,17 @@ if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
 const composer = new EffectComposer(renderer);
 composer.setSize(sizes.width, sizes.height);
 composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
-const bloomPass = new UnrealBloomPass(new THREE.Vector2(sizes.width, sizes.height), 1, 1.0, 0);
+
+const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(sizes.width, sizes.height),
+    1, 1.0, 0
+);
 composer.addPass(bloomPass);
 
-// --- MENU GUI LENGKAP (Dikembalikan) ---
+// --- DAT.GUI SETUP (MENU PENGATURAN LENGKAP DIKEMBALIKAN) ---
 const gui = new GUI({ width: 350 });
 
 // Torus Controls
@@ -193,44 +226,120 @@ cameraFolder.add(camera, 'fov', 10, 150, 1).onChange(() => {
     camera.updateProjectionMatrix();
 }).name('Field of View');
 
-// Light Controls
-const lightFolder = gui.addFolder('Lights');
-lightFolder.add(torusLight, 'intensity', 0, 200, 1).name('Torus Light');
-lightFolder.add(spotLight, 'intensity', 0, 50, 1).name('Spot Light');
-lightFolder.add(rimLight, 'intensity', 0, 50, 1).name('Rim Light');
+// Torus Light Controls
+const torusLightFolder = gui.addFolder('Torus Light');
+torusLightFolder.add(torusLight.position, 'x', -5, 5, 0.1).name('Position X');
+torusLightFolder.add(torusLight.position, 'y', -5, 5, 0.1).name('Position Y');
+torusLightFolder.add(torusLight.position, 'z', -5, 5, 0.1).name('Position Z');
+torusLightFolder.add(torusLight, 'intensity', 0, 200, 1).name('Base Intensity');
+torusLightFolder.add(torusLight, 'distance', 0, 10, 0.1).name('Distance');
+torusLightFolder.add(torusLight, 'decay', 0, 5, 0.1).name('Decay');
+torusLightFolder.addColor({ color: '#ffffff' }, 'color').onChange((value) => {
+    torusLight.color.set(value);
+}).name('Color');
 
-// Bloom Controls
-const bloomFolder = gui.addFolder('Bloom');
+// Spot Light Controls
+const spotLightFolder = gui.addFolder('Spot Light');
+spotLightFolder.add(spotLight.position, 'x', -10, 10, 0.1).name('Position X');
+spotLightFolder.add(spotLight.position, 'y', -10, 10, 0.1).name('Position Y');
+spotLightFolder.add(spotLight.position, 'z', -10, 10, 0.1).name('Position Z');
+spotLightFolder.add(spotLight, 'intensity', 0, 50, 1).name('Intensity');
+spotLightFolder.add(spotLight, 'distance', 0, 200, 1).name('Distance');
+spotLightFolder.add(spotLight, 'angle', 0, Math.PI / 2, 0.01).name('Angle');
+spotLightFolder.add(spotLight, 'penumbra', 0, 1, 0.01).name('Penumbra');
+spotLightFolder.addColor({ color: '#ffffff' }, 'color').onChange((value) => {
+    spotLight.color.set(value);
+}).name('Color');
+
+// Rim Light Controls
+const rimLightFolder = gui.addFolder('Rim Light');
+rimLightFolder.add(rimLight.position, 'x', -10, 10, 0.1).name('Position X');
+rimLightFolder.add(rimLight.position, 'y', -10, 10, 0.1).name('Position Y');
+rimLightFolder.add(rimLight.position, 'z', -10, 10, 0.1).name('Position Z');
+rimLightFolder.add(rimLight, 'intensity', 0, 50, 1).name('Intensity');
+rimLightFolder.add(rimLight, 'distance', 0, 10, 0.1).name('Distance');
+rimLightFolder.add(rimLight, 'decay', 0, 5, 0.1).name('Decay');
+rimLightFolder.addColor({ color: '#ffffff' }, 'color').onChange((value) => {
+    rimLight.color.set(value);
+}).name('Color');
+
+// Bloom Effect Controls
+const bloomFolder = gui.addFolder('Bloom Effect');
 bloomFolder.add(bloomPass, 'strength', 0, 3, 0.01).name('Strength');
 bloomFolder.add(bloomPass, 'radius', 0, 2, 0.01).name('Radius');
 bloomFolder.add(bloomPass, 'threshold', 0, 1, 0.01).name('Threshold');
 
 // Animation Controls
 const animationParams = {
-    flickerSpeed: 0.02, flickerIntensity: 10, autoRotation: true, rotationSpeed: 1
+    flickerSpeed: 0.02,
+    flickerIntensity: 10,
+    autoRotation: true,
+    rotationSpeed: 1
 };
-const animFolder = gui.addFolder('Animation');
-animFolder.add(animationParams, 'flickerSpeed', 0, 0.1);
-animFolder.add(animationParams, 'flickerIntensity', 0, 50);
-animFolder.add(animationParams, 'autoRotation');
-animFolder.add(animationParams, 'rotationSpeed', 0, 5);
+
+const animationFolder = gui.addFolder('Animation');
+animationFolder.add(animationParams, 'flickerSpeed', 0, 0.1, 0.001).name('Flicker Speed');
+animationFolder.add(animationParams, 'flickerIntensity', 0, 50, 1).name('Flicker Intensity');
+animationFolder.add(animationParams, 'autoRotation').name('Auto Rotation');
+animationFolder.add(animationParams, 'rotationSpeed', 0, 5, 0.1).name('Rotation Speed');
+
+// Group Controls
+const groupFolder = gui.addFolder('Group Transform');
+groupFolder.add(group.position, 'x', -10, 10, 0.1).name('Position X');
+groupFolder.add(group.position, 'y', -10, 10, 0.1).name('Position Y');
+groupFolder.add(group.position, 'z', -10, 10, 0.1).name('Position Z');
+groupFolder.add(group.rotation, 'x', 0, Math.PI * 2, 0.1).name('Rotation X');
+groupFolder.add(group.rotation, 'y', 0, Math.PI * 2, 0.1).name('Rotation Y');
+groupFolder.add(group.rotation, 'z', 0, Math.PI * 2, 0.1).name('Rotation Z');
 
 gui.close();
 
-// Resize
+// Scene Controls (HAPUS BACKGROUND COLOR BIAR VIDEO KELIHATAN)
+/* const sceneFolder = gui.addFolder('Scene');
+sceneFolder.addColor({ backgroundColor: '#000000' }, 'backgroundColor').onChange((value) => {
+    scene.background = new THREE.Color(value);
+}).name('Background Color'); 
+*/
+
+// Renderer Controls
+const rendererFolder = gui.addFolder('Renderer');
+rendererFolder.add(renderer, 'toneMappingExposure', 0, 3, 0.01).name('Exposure');
+
+// Helper toggles
+const helpersFolder = gui.addFolder('Helpers');
+const helperControls = {
+    showTorusLightHelper: false,
+    showSpotLightHelper: false,
+    showRimLightHelper: false,
+    showFillLightHelper: false
+};
+
+helpersFolder.add(helperControls, 'showTorusLightHelper').onChange((value) => {
+    value ? scene.add(torusLightHelper) : scene.remove(torusLightHelper);
+}).name('Torus Light Helper');
+
+helpersFolder.add(helperControls, 'showSpotLightHelper').onChange((value) => {
+    value ? scene.add(spotLightHelper) : scene.remove(spotLightHelper);
+}).name('Spot Light Helper');
+
+helpersFolder.add(helperControls, 'showRimLightHelper').onChange((value) => {
+    value ? scene.add(rimLightHelper) : scene.remove(rimLightHelper);
+}).name('Rim Light Helper');
+
+helpersFolder.add(helperControls, 'showFillLightHelper').onChange((value) => {
+    value ? scene.add(fillLightHelper) : scene.remove(fillLightHelper);
+}).name('Fill Light Helper');
+
+// Resize Handling
 window.addEventListener('resize', () => {
-    // Kita pakai window.innerWidth/Height agar pas selayar saja
     sizes.width = window.innerWidth;
     sizes.height = window.innerHeight;
-
     camera.aspect = sizes.width / sizes.height;
     camera.updateProjectionMatrix();
-
     renderer.setSize(sizes.width, sizes.height);
-    renderer.setPixelRatio(1); // <--- Pastikan ini 1
-
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     composer.setSize(sizes.width, sizes.height);
-    composer.setPixelRatio(1); // <--- Pastikan ini 1
+    composer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
 // Animation Loop
@@ -238,9 +347,11 @@ let time = 0;
 const tick = () => {
     time += animationParams.flickerSpeed;
     torusLight.intensity = torusLight.intensity + Math.sin(time) * animationParams.flickerIntensity;
+
     if (animationParams.autoRotation) {
         torus.rotation.z += 0.01 * animationParams.rotationSpeed;
     }
+
     composer.render();
     window.requestAnimationFrame(tick);
 };
@@ -302,17 +413,26 @@ window.onload = function () {
     }
 };
 
+// --- LOGIKA EFEK KURSOR (TUBES NEON) ---
 // --- LOGIKA EFEK KURSOR (Fixed) ---
-const cursorApp = TubesCursor(document.getElementById('cursor-canvas'), {
-    tubes: {
-        colors: ["#f967fb", "#53bc28", "#6958d5"], 
-        lights: { intensity: 200, colors: ["#83f36e", "#fe8a2e", "#ff008a", "#60aed5"] }
-    }
-});
+// Kita pakai 'window.TubesCursor' karena library-nya dimuat lewat HTML
+if (window.TubesCursor) {
+    const cursorApp = window.TubesCursor(document.getElementById('cursor-canvas'), {
+        tubes: {
+            colors: ["#f967fb", "#53bc28", "#6958d5"], 
+            lights: {
+                intensity: 200,
+                colors: ["#83f36e", "#fe8a2e", "#ff008a", "#60aed5"]
+            }
+        }
+    });
 
-document.body.addEventListener('click', () => {
-    const colors = Array(3).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
-    const lights = Array(4).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
-    cursorApp.tubes.setColors(colors);
-    cursorApp.tubes.setLightsColors(lights);
-});
+    // Fitur ganti warna saat klik mouse
+    document.body.addEventListener('click', () => {
+        const colors = Array(3).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
+        const lights = Array(4).fill(0).map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0'));
+        
+        cursorApp.tubes.setColors(colors);
+        cursorApp.tubes.setLightsColors(lights);
+    });
+}

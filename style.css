@@ -249,14 +249,19 @@ p                                       {color: #949494;}
 }
 
 
-/* --- EFEK KURSOR TUBES (FIXED) --- */
-/* --- EFEK KURSOR TUBES (FIXED) --- */
+/* --- EFEK KURSOR TUBES (FORCE VISIBLE) --- */
 #cursor-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999;       /* Paling atas, di atas segalanya */
-    pointer-events: none; /* PENTING: Agar kita tetap bisa klik tombol/link di bawahnya */
+    position: fixed !important;    /* Wajib nempel di layar */
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;       /* Lebar penuh */
+    height: 100vh !important;      /* Tinggi penuh */
+    
+    z-index: 2147483647 !important; /* Angka z-index tertinggi di browser */
+    
+    background: transparent !important; /* Wajib bening/bolong */
+    pointer-events: none !important;    /* Biar klik tembus ke bawah */
+    
+    /* --- HAPUS BARIS INI NANTI KALAU SUDAH MUNCUL --- */
+    border: 5px solid red !important;   /* Garis merah buat ngecek posisi */
 }

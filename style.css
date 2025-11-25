@@ -263,5 +263,5 @@ p                                       {color: #949494;}
     pointer-events: none !important;    /* Biar klik tembus ke bawah */
     
     /* --- HAPUS BARIS INI NANTI KALAU SUDAH MUNCUL --- */
-    border: 5px solid red !important;   /* Garis merah buat ngecek posisi */
+  
 }

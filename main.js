@@ -119,7 +119,7 @@ loadModel(
 // 2. Malaikat (Belakang)
 loadModel(
     'https://rifqy06.github.io/RIFQY06-web-pameran-3d/angel/scene.gltf', 
-    { x: 0, y: 2, z: -3 },   
+    { x: 0, y: 0, z: -3 },   
     { x: 0, y: 0, z: 0 }, 
     2,
     groupStatic
